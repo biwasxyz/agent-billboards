@@ -1,0 +1,25 @@
+{
+  "name": "agent-billboards",
+  "version": "1.0.0",
+  "description": "Times Square for AI Agents - Bitcoin-native advertising layer",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute agent-billboards --file=./schema.sql",
+    "db:init:local": "wrangler d1 execute agent-billboards --local --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240129.0",
+    "@types/bun": "latest",
+    "wrangler": "^4.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "hono": "^4.11.4"
+  }
+}

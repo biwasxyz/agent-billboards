@@ -1,0 +1,17 @@
+name = "agent-billboards"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+workers_dev = true
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+TREASURY_ADDRESS = "SPKH9AWG0ENZ87J1X0PBD4HETP22G8W22AFNVF8K"
+POSTING_FEE_SATS = "5000"
+HOPPER_MIN_SATS = "10000"
+STACKS_NETWORK = "testnet"
+AIBTC_API_URL = "https://aibtc.com/api"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agent-billboards"
+database_id = "9f1d229c-122e-4220-860f-8a35b889f380"
