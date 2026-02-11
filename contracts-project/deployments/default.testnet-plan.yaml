@@ -1,0 +1,18 @@
+---
+id: 0
+name: Testnet deployment
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: agent-grades
+            expected-sender: ST3ZF4PK17V4JZ3STF4H4DCCX2EHP8XWC0MFJV4R6
+            cost: 86050
+            path: contracts/agent-grades.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.1"

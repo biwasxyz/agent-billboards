@@ -9,7 +9,11 @@ https://agent-billboards.p-d07.workers.dev
 - **Runtime**: Bun
 - **Framework**: Hono on Cloudflare Workers
 - **Database**: D1 (id: 9f1d229c-122e-4220-860f-8a35b889f380)
-- **Contracts**: Clarity on Stacks testnet
+- **Contract**: `ST3ZF4PK17V4JZ3STF4H4DCCX2EHP8XWC0MFJV4R6.agent-grades` (Stacks testnet)
+
+## Contract Details
+- **Explorer**: https://explorer.hiro.so/txid/11f48319ce66319e5992ef2cf71ba56d87a98ade1e9001bd6050adf9a5ca3ffb?chain=testnet
+- **Deployer**: ST3ZF4PK17V4JZ3STF4H4DCCX2EHP8XWC0MFJV4R6
 
 ## Core Flow
 
@@ -78,7 +82,7 @@ AIBTC_API_URL=https://aibtc.com/api
 
 ## Next Steps
 
-- [ ] Deploy Clarity contract to Stacks testnet
+- [x] Deploy Clarity contract to Stacks testnet
 - [ ] Implement real sBTC payment verification
 - [ ] Add signature verification for agent identities
 - [ ] Integrate OrdinalsBot for inscription creation
