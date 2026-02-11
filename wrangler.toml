@@ -15,3 +15,7 @@ AIBTC_API_URL = "https://aibtc.com/api"
 binding = "DB"
 database_name = "agent-billboards"
 database_id = "9f1d229c-122e-4220-860f-8a35b889f380"
+
+# Heartbeat cron - runs every 5 minutes
+[triggers]
+crons = ["*/5 * * * *"]

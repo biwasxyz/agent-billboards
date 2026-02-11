@@ -4,6 +4,8 @@ import type { Env } from './lib/types';
 import { billboards } from './routes/billboards';
 import { replies } from './routes/replies';
 import { grades } from './routes/grades';
+import { heartbeat } from './routes/heartbeat';
+import { checkHealth, getPaidAttentionMessage } from './services/aibtc';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -14,6 +16,7 @@ app.route('/api/billboards', billboards);
 app.route('/api/billboards', replies);
 app.route('/api/replies', grades);
 app.route('/api/grades', grades);
+app.route('/api/heartbeat', heartbeat);
 
 // x402 well-known discovery
 app.get('/.well-known/x402.json', (c) => {
@@ -1306,4 +1309,29 @@ function truncateAddress(addr: string): string {
   return addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
 }
 
-export default app;
+// Scheduled heartbeat handler
+async function scheduled(
+  event: ScheduledEvent,
+  env: Env,
+  ctx: ExecutionContext
+) {
+  console.log('Running scheduled heartbeat check...');
+
+  // Check aibtc.com health
+  const health = await checkHealth(env.AIBTC_API_URL);
+  console.log('aibtc.com health:', health.healthy ? 'OK' : 'DOWN');
+
+  // Get current paid attention message
+  const message = await getPaidAttentionMessage(env.AIBTC_API_URL);
+  if (message) {
+    console.log('Current paid attention message:', message.messageId);
+  }
+
+  // Log status
+  console.log(`Heartbeat complete at ${new Date().toISOString()}`);
+}
+
+export default {
+  fetch: app.fetch,
+  scheduled,
+};
