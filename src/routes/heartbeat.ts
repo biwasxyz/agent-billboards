@@ -32,23 +32,23 @@ heartbeat.get('/current', async (c) => {
 
 /**
  * Submit a check-in heartbeat
+ * Sign: "AIBTC Check-In | {ISO 8601 timestamp}"
+ * Timestamp must be within 5 minutes of server time
  */
 heartbeat.post('/check-in', async (c) => {
   const body = await c.req.json();
-  const { btcAddress, stxAddress, signature, publicKey } = body;
+  const { signature, timestamp } = body;
 
-  if (!stxAddress || !signature || !publicKey) {
+  if (!signature || !timestamp) {
     return c.json(
-      { error: 'Required: stxAddress, signature, publicKey' },
+      { error: 'Required: signature, timestamp' },
       400
     );
   }
 
   const result = await submitCheckIn(
-    btcAddress || '',
-    stxAddress,
     signature,
-    publicKey,
+    timestamp,
     c.env.AIBTC_API_URL
   );
 
@@ -56,36 +56,27 @@ heartbeat.post('/check-in', async (c) => {
     return c.json({ error: result.error }, 400);
   }
 
-  // Log the check-in
-  console.log(`Heartbeat check-in: ${stxAddress}`);
+  console.log(`Heartbeat check-in at ${timestamp}`);
 
   return c.json({
     success: true,
     message: result.message,
-    timestamp: new Date().toISOString(),
+    timestamp,
   });
 });
 
 /**
  * Submit a response to paid attention message
+ * Sign: "Paid Attention | {messageId} | {response}"
+ * Max 500 characters, one response per message
  */
 heartbeat.post('/respond', async (c) => {
   const body = await c.req.json();
-  const {
-    messageId,
-    response,
-    btcAddress,
-    stxAddress,
-    signature,
-    publicKey,
-  } = body;
+  const { signature, response } = body;
 
-  if (!messageId || !response || !stxAddress || !signature || !publicKey) {
+  if (!signature || !response) {
     return c.json(
-      {
-        error:
-          'Required: messageId, response, stxAddress, signature, publicKey',
-      },
+      { error: 'Required: signature, response' },
       400
     );
   }
@@ -95,12 +86,8 @@ heartbeat.post('/respond', async (c) => {
   }
 
   const result = await submitPaidAttentionResponse(
-    messageId,
-    response,
-    btcAddress || '',
-    stxAddress,
     signature,
-    publicKey,
+    response,
     c.env.AIBTC_API_URL
   );
 
@@ -108,7 +95,7 @@ heartbeat.post('/respond', async (c) => {
     return c.json({ error: result.error }, 400);
   }
 
-  console.log(`Paid attention response: ${stxAddress} -> ${messageId}`);
+  console.log(`Paid attention response submitted`);
 
   return c.json({
     success: true,

@@ -97,17 +97,15 @@ export async function getPaidAttentionMessage(
 
 /**
  * Submit a check-in heartbeat
- * Requires signing: "AIBTC Check-In | {ISO timestamp}"
+ * Requires BIP-137 signature of: "AIBTC Check-In | {ISO timestamp}"
+ * Timestamp must be within 5 minutes of server time
+ * Rate limit: one check-in per 5 minutes
  */
 export async function submitCheckIn(
-  btcAddress: string,
-  stxAddress: string,
   signature: string,
-  publicKey: string,
+  timestamp: string,
   apiUrl: string = AIBTC_API
 ): Promise<HeartbeatResult> {
-  const timestamp = new Date().toISOString();
-
   try {
     const response = await fetch(`${apiUrl}/paid-attention`, {
       method: 'POST',
@@ -116,23 +114,19 @@ export async function submitCheckIn(
       },
       body: JSON.stringify({
         type: 'check-in',
-        btcAddress,
-        stxAddress,
         signature,
-        publicKey,
         timestamp,
       }),
     });
 
+    const data = (await response.json()) as any;
+
     if (!response.ok) {
-      const error = await response.text();
       return {
         success: false,
-        error: `Check-in failed: ${error}`,
+        error: data.error || `Check-in failed: ${response.status}`,
       };
     }
-
-    const data = (await response.json()) as any;
 
     return {
       success: true,
@@ -148,15 +142,12 @@ export async function submitCheckIn(
 
 /**
  * Submit a response to the current paid attention message
- * Requires signing: "Paid Attention | {messageId} | {response}"
+ * Requires BIP-137 signature of: "Paid Attention | {messageId} | {response}"
+ * Max 500 characters, one response per message
  */
 export async function submitPaidAttentionResponse(
-  messageId: string,
-  responseText: string,
-  btcAddress: string,
-  stxAddress: string,
   signature: string,
-  publicKey: string,
+  responseText: string,
   apiUrl: string = AIBTC_API
 ): Promise<HeartbeatResult> {
   try {
@@ -166,25 +157,19 @@ export async function submitPaidAttentionResponse(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        type: 'response',
-        messageId,
-        response: responseText,
-        btcAddress,
-        stxAddress,
         signature,
-        publicKey,
+        response: responseText,
       }),
     });
 
+    const data = (await response.json()) as any;
+
     if (!response.ok) {
-      const error = await response.text();
       return {
         success: false,
-        error: `Response failed: ${error}`,
+        error: data.error || `Response failed: ${response.status}`,
       };
     }
-
-    const data = (await response.json()) as any;
 
     return {
       success: true,
